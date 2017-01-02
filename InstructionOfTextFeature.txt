@@ -1,0 +1,80 @@
+-------------------------------instruction---------------------
+this is an instruction of how to use class TextFeature
+
+attribute:-----------------------------------------------  
+	symbols                 #special symbols to be excluded, can be specified in the future
+	booklist			    #list of file names in the folder  
+	overalldic 			    #dict of overall 
+	sepdics = []			#all unique word frequency in each book
+	maxSentenceLen 			#longest sentence in the folder
+
+Example:-----------------------------------------------------------------
+suppose we have three files in the fold "books"
+title: 1_batman.txt						content: batman is good.
+title: 2_spiderman.txt					content: spiderman is also good.
+title: 3_superman.txt					content: superman, batman and spiderman are all good.
+
+symbols = "!\"#$%&()*+,_-./:;<=>?@[\]^`{|}~\\"
+booklist = [1_batman.txt, 2_spiderman.txt, 3_superman.txt]
+overalldic = {batman:2,spiderman:2,superman:1,is:2,are:1,good:3,also:1,all:1,and:1}
+sepdics = 	 [1,			0, 			0, 		1,  0, 		1, 		0, 		0,   0;
+			  0,			1,			0,		1,	0,		1,		1, 		0, 	 0;
+			  1, 			1, 			1, 		0, 	1,		1,		0,		1, 	 1]
+maxSentenceLen = 7 (the longest sentence include 7 word)
+
+funtions:-------------------------------------------------------------
+	1. tokenize(path)
+		usage: tokenize all the files in the folder and get an overall dictionary.
+		input:  the path of the folder.
+		output: overalldic: all unique words in all the books with the frequency; 
+				booklist: list of names of the files in the folder.
+
+	2. singleWordProcess(word)
+		usage: purify each word to remove the non-ASCII, numbers and etc.
+		input:String, raw single word
+		output: String, processed word getting rid of non-ASCII, numbers and etc.
+
+	3. get_sepdics(path)
+		usage:  get the word frequecy of each file corresponding to the overall dict    
+        input: path of the folder
+        output: spedics: all unique word frequency in each file
+
+    4. ngram_richness(filename, filecontent)
+        usage: get the three features of each file, it is very convenient to be called in "get_sepdics"
+        input: the file name, and the word frequecy of the file
+        output: three features
+        1. Hapax Legomena1(n-gram): Number of words that occur exactly once.(Normalized by number of unique words)
+        2. Dis Legomena1 Number of words that occurs exactly twice.(Normalized by number of unique words)
+        3. Vocabulary Richness: Total number of unique words.(Normalized by number of words.)
+
+    5. sentenceLengthDistribution(path, book_content)
+    	usage: get Sentence Length Distribution(how many words per sentence),it is very convenient to be called in "get_sepdics"
+        input: path, content of the file
+        output: length distribution of sentences in .csv file
+        warning: call nltk.download() when use this function or pronoun_conjunction_distribution for the first time
+
+    6. wordLengthDistribution(path)
+    	usage: find the word length distribution of each file in the folder
+        input: path of the folder
+        output: .csv file saves word length distribution
+
+    7. pronoun_conjunction_distribution(path):
+        usage: get the pronoun and conjunction distribution
+        input: .txt files
+        output: two .csv files save pronoun and conjunction word frequency
+        warning: call nltk.download() when use this function or sentenceLengthDistribution for the first time
+        
+    8. fre_to_distribution(frequency_list):
+        # usage: always be called in "pronoun_conjunction_distribution", transfer frequency to distribution, return index of distribution list which is the length or frequency of pronouns or conjunctions in each sentence
+        # input: frequency list
+        # output: distribution list
+
+    9. addZeros(path)
+    	usage: padding all the files in a .csv file to be the same length
+    	input: path of the file
+    	output:padded .csv file
+    
+    10. clearPlural()
+    	usage: clear plural and third person sigular
+    	input: none
+    	output: revised spedics and overalldic
